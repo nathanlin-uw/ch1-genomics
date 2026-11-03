@@ -1,0 +1,3 @@
+# To keep a folder's contents
+!folder/*
+!README.md
