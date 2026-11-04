@@ -1,3 +1,3 @@
-This folder contains the genomes and their annotations that I have downloaded from NCBI. I will be separating these into "higher quality" and "lower quality" genomes based on their assembly level and number of scaffolds. Generally, I consider higher quality assemblies to be at the scaffold or chromosome level, with fewer than ~50k scaffolds.
+This folder contains the genomes and their annotations that I have downloaded from NCBI. I separated these into higher, medium, and lower quality genomes based on their assembly level and scaffold N50's and L50's. Generally, I consider higher quality assemblies to have scaffold N50's around 100Mb or higher, with single digit scaffold L50's. Scaffold N50's are around the 2Mb to 400kb range for medium quality assemblies, and 100kb or below for lower quality assemblies. All but one of the higher quality genomes are at the chromosome level.
 
-My review of the genomes available on NCBI can be found in /info/ncbi-ixodid-genomes.pdf
+My review of the genomes available on NCBI can be found in /info/ncbi-ixodid-genomes-v1-20261104.pdf
