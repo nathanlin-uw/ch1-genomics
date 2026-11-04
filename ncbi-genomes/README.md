@@ -1,0 +1,1 @@
+This folder contains the genomes and their annotations that I have downloaded from NCBI. I will be separating these into "higher quality" and "lower quality" genomes based on their assembly level and number of scaffolds. Generally, I consider higher quality assemblies to be at the scaffold or chromosome level, with ~25k or fewer scaffolds.
