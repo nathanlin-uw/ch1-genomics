@@ -2,4 +2,4 @@ This folder contains the genomes and their annotations that I have downloaded fr
 
 Scaffold N50 is the size of the scaffold for which, if scaffolds are arranged from largest to smallest, the sum of sizes of that scaffold and all larger preceding scaffolds reaches or exceeds half of the assembly size. Scaffold L50 uses the same concept, but is instead the number of scaffolds it takes to reach that half-assembly size sum. These are metrics of how large and continuous the major components of the genome are, and higher quality genomes have fewer and larger components.
 
-My review of the genomes available on NCBI can be found in /info/ncbi-ixodid-genomes-v1-20261104.pdf
+My review of the genomes available on NCBI can be found in /info/ncbi-ixodid-genomes-v1-20261105.pdf
