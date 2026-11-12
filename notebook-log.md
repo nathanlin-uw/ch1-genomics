@@ -24,7 +24,29 @@ I created a script, 01-ncbi-downloading.sh, for downloading a set of NCBI genome
 
 My notes for thinking through and writing this script are below:
 - Determining annotation quality: 
-- Orthofinder input: 
-- Extracting information from csvs: 
+	- This genome annotation tutorial provided useful background information and suggested the quality assessment tools compleasm and PSAURON.
+	- The package compleasm was released in 2023 and reimplements BUSCO with Miniprot, supposedly making it faster and reducing underestimation of completeness (https://doi.org/10.1093/bioinformatics/btad595, https://github.com/huangnengCSU/compleasm/tree/main).
+	- One more package, PSAURON, was released in 2025 and uses a machine learning model, trained on a reference set of coding sequences from 1090 eukaryotic NCBI RefSeq genomes, to evaluate whether regions in an annotation designated as coding sequences are likely to be actual protein-coding sequences (https://doi.org/10.1093/nargab/lqae189, https://github.com/salzberg-lab/PSAURON). This package reports a percentage of all annotated protein sequences "positively assessed" by PSAURON, and the authors describe it as a score of annotation accuracy confidence.
+	- Some notes on BUSCO: BUSCO v6 released in 2025, and now has Miniprot as its default method (https://doi.org/10.1093/nar/gkae987). The user guide states that Miniprot has sensitivity issues with the detection of divergent orthologs, resulting in potential underperformance in species highly divergent from the ones used to produce the BUSCO dataset (https://busco.ezlab.org/busco_userguide.html). It also cautions that BUSCO's predicted transcripts when using Miniprot may have internal stop codons and should not be used for further analysis. The Metaeuk pipeline is an alternative to Miniprot that I could use with the --metaeuk option
+	- The BUSCO vs compleasm question is talked about briefly in this 2024 lab blog post, but there weren't really any answers (https://www.treethinkers.info/en/post/busco-or-compleasm). 
+	- The Goenomics Mendle blog, written by Martin Kollmar in 2025, brings up some BUSCO completeness myths and insights: 
+		- We can't compare BUSCO completeness when using different lineages, because although single-copy genes in more general taxa can be expected to be single-copy genes in more specific taxa, the more specific taxa DO NOT contain all of the genes of the more general taxa -- "genes in more general taxa are not fully part of the gene set of the next specific taxa" (https://mendle.org/blog/busco-completeness-myths-debunked). 
+		- BUSCO completeness evaluation of assemblies is different from evaluation of annotations -- the way genes and proteins are classified as "Fully complete single copy" versus "Fragmented" is supposedly more problematic in annotations (there's also another layer of potential errors here) -- proteins are more prone to being miscategorized as complete or missing -- so we can't compare assemblies and annotations, nor can we compare annotations with other annotations using BUSCO completeness alone? (https://mendle.org/blog/busco-completeness-myths-debunked-part-2)
+		- Artificially fused genes in the assembly can alter missing/duplicated/complete results of their individual components depending on how many copies of the components vs fused copies are present -- supposedly, this inflates completeness (https://mendle.org/blog/busco-completeness-myths-debunked-part-3).
+		- Repeated regions can be found in BUSCO data due to gene prediction artifacts. The author concludes that "when trying to reach BUSCO genome assembly statistics with your own genome annotation, you are likely to incorporate erroneous or mispredicted gene regions into your analysis", but I don't really understand what "reach BUSCO genome assembly statistics" means (https://mendle.org/blog/busco-completeness-myths-debunked-part-4).
+		- Genome annotations will have more observations of duplicates than genome assemblies due to differences in hmmsearch, rather than for any biological reason (https://mendle.org/blog/busco-completeness-myths-debunked-part-5). Additionally, annotation vs assembly modes use different references to define full-length genes, so there will be inherent differences in the frequency of fragmented BUSCO genes also not due to any biological reason (https://mendle.org/blog/busco-completeness-myths-debunked-part-6). These technical biases make it so that we can't compare the number of complete vs duplicated vs fragmented BUSCO genes between assembly and annotation modes.
+		- This blog also has some posts on functional annotation pitfalls that will be useful later (https://mendle.org/blog/functional-genome-annotation-dos-and-donts-part-2).
+ 
+- OrthoFinder input (https://github.com/davidemms/OrthoFinder): 
+	- OrthoFinder takes a directory of protein sequence FASTA files
+	- One of its outputs is a FASTA for each orthogroup, containing the sequences of each gene in that orthogroup.
+
+- Captus input (https://edgardomortiz.github.io/captus.docs/assembly/extract/preparation/): 
+	- You can have multiple sequences for a single locus! For OrthoFinder output, can we then consider each orthogroup to be one locus, and include the sequences identified for that orthogroup each as individual references? Each ID line of the FASTA would then use the naming format >{Sequence ID}-{Locus} [{optional description}].
+	- Coding sequences can either be amino acids or nucleotides. 
+
+- Extracting information from .csv's: 
+
 - Iteration in Bash: 
+
 - NCBI command line interface: 
