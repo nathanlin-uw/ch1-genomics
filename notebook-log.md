@@ -20,10 +20,37 @@ I installed miniconda3 to my home/ntlin/ (aka ~/) directory, running through the
 I used `conda info` to learn that my Conda is version 26.9.3, my Python is version 3.14.8.final.0, and the distribution I used was Miniconda3 py314_26.9.3-0 (sh, linux-64). The next day, I updated Conda to 26.9.4 with `conda self update`.
 
 ### Downloading genomes from NCBI ###
-I created a script, 01-ncbi-downloading.sh, for downloading a set of NCBI genomes (and protein-coding genes, if an annotation is available), for a specified quality. I intend to 1) retrieve the genome sequences for each assembly, 2) retrieve a list of protein-coding genes for assemblies with high-quality annotations to concatenate for a "full genes list", and 3) retrieve whatever is necessary to run OrthoFinder on the same assemblies with high-quality annotations.
+I created a script, 01-ncbi-downloading.sh, for downloading a set of NCBI genomes (and protein-coding genes, if an annotation is available), for a specified assembly quality. I intend to 1) retrieve the genome sequences for each assembly, 2) retrieve a list of protein-coding genes for assemblies with high-quality annotations to concatenate for a "full genes list", and 3) retrieve whatever is necessary to run OrthoFinder on the same assemblies with high-quality annotations. My goal is to assess the quality of each assembly's annotation before using the annotation's protein sequences in OrthoFinder -- this script downloads the genome files and available annotation files of all of our assemblies, in preparation for quality assessment and later discarding of low-quality annotations.
 
-My notes for thinking through and writing this script are below:
-- Determining annotation quality: 
+Script verbalized: This script takes a "high/med/low" argument when run. It first validates the input, then accesses the csv file containing the accession numbers, annotation information, and quality details of the NCBI genome assemblies. I would first filter to only have assemblies of the specified quality, then for each of the resulting entries, I would check whether or not there is an annotation. For assemblies with annotations, I would download the genome file, gff3 annotation file, cds file, and protein sequences file. For assemblies without annotations, I would download only the genome file. 
+
+My notes for thinking through and writing this script are below: 
+- OrthoFinder input (https://github.com/davidemms/OrthoFinder): 
+	- OrthoFinder takes a directory of protein sequence FASTA files
+	- One of its outputs is a FASTA for each orthogroup, containing the sequences of each gene in that orthogroup.
+
+- Captus input (https://edgardomortiz.github.io/captus.docs/assembly/extract/preparation/): 
+	- You can have multiple sequences for a single locus! For OrthoFinder output, can we then consider each orthogroup to be one locus, and include the sequences identified for that orthogroup each as individual references? Each ID line of the FASTA would then use the naming format >{Sequence ID}-{Locus} [{optional description}].
+	- Coding sequences can either be amino acids or nucleotides. 
+
+- Bash scripting: 
+	- Script arguments: I only need one positional argument for this script, which I would access with `"$1"`. I'd validate this later, by iterating through each of the quality levels ("high"/"med"/"low"). If none of those words match the argument given, it'll throw an error. 
+	- To extract information from .csv's, I would use `while IFS=$',' read -r accession_number assembly_name annotation_info assembly_quality; do {filter then iterate through contents, download NCBI assets}; done < ../all-ncbi-genomes-20261105.csv`
+	- For a line in the .csv, if statement for whether there is an annotation or not, then pull out the accession number and run the ncbi datasets command to download its files.
+	- For loops in Bash: `for {item or file} in {array or directory}; do {whatever}; done;`. 
+	- If statements in Bash: `if [[ $annotation_info = "ncbi-ann" ]]; then {download genome and annotation files}; else {download genome files}; fi`
+
+- NCBI datasets command line interface:
+	- This script depends on the ncbi-datasets-cli package, version 18.41.1. I installed it using Conda, with `conda install conda-forge::ncbi-datasets-cli`
+	- I can use the following command: `datasets download genome accession "${accession_number}" --filename "${assembly_name}" --include genome,gff3,cds,protein`
+
+To run the script, in the scripts/ folder and with ncbi-datasets-cli in the active Conda environment, I used the commands `bash 01-ncbi-downloading.sh high`, `bash 01-ncbi-downloading.sh med`, and ``bash 01-ncbi-downloading.sh low`. The downloads were all saved to ncbi-genomes/, in their respective high-quality/, med-quality/, and low-quality/ subfolders. 
+
+### Quality assessment of annotations ###
+
+First, I compiled all of the CDS for assemblies with annotations.
+
+# Determining annotation quality notes (it's a lot, but tl;dr I will use BUSCO and PSAURON) #
 	- This genome annotation tutorial provided useful background information and suggested the quality assessment tools compleasm and PSAURON.
 	- The package compleasm was released in 2023 and reimplements BUSCO with Miniprot, supposedly making it faster and reducing underestimation of completeness (https://doi.org/10.1093/bioinformatics/btad595, https://github.com/huangnengCSU/compleasm/tree/main).
 	- One more package, PSAURON, was released in 2025 and uses a machine learning model, trained on a reference set of coding sequences from 1090 eukaryotic NCBI RefSeq genomes, to evaluate whether regions in an annotation designated as coding sequences are likely to be actual protein-coding sequences (https://doi.org/10.1093/nargab/lqae189, https://github.com/salzberg-lab/PSAURON). This package reports a percentage of all annotated protein sequences "positively assessed" by PSAURON, and the authors describe it as a score of annotation accuracy confidence.
@@ -36,17 +63,4 @@ My notes for thinking through and writing this script are below:
 		- Repeated regions can be found in BUSCO data due to gene prediction artifacts. The author concludes that "when trying to reach BUSCO genome assembly statistics with your own genome annotation, you are likely to incorporate erroneous or mispredicted gene regions into your analysis", but I don't really understand what "reach BUSCO genome assembly statistics" means (https://mendle.org/blog/busco-completeness-myths-debunked-part-4).
 		- Genome annotations will have more observations of duplicates than genome assemblies due to differences in hmmsearch, rather than for any biological reason (https://mendle.org/blog/busco-completeness-myths-debunked-part-5). Additionally, annotation vs assembly modes use different references to define full-length genes, so there will be inherent differences in the frequency of fragmented BUSCO genes also not due to any biological reason (https://mendle.org/blog/busco-completeness-myths-debunked-part-6). These technical biases make it so that we can't compare the number of complete vs duplicated vs fragmented BUSCO genes between assembly and annotation modes.
 		- This blog also has some posts on functional annotation pitfalls that will be useful later (https://mendle.org/blog/functional-genome-annotation-dos-and-donts-part-2).
- 
-- OrthoFinder input (https://github.com/davidemms/OrthoFinder): 
-	- OrthoFinder takes a directory of protein sequence FASTA files
-	- One of its outputs is a FASTA for each orthogroup, containing the sequences of each gene in that orthogroup.
 
-- Captus input (https://edgardomortiz.github.io/captus.docs/assembly/extract/preparation/): 
-	- You can have multiple sequences for a single locus! For OrthoFinder output, can we then consider each orthogroup to be one locus, and include the sequences identified for that orthogroup each as individual references? Each ID line of the FASTA would then use the naming format >{Sequence ID}-{Locus} [{optional description}].
-	- Coding sequences can either be amino acids or nucleotides. 
-
-- Extracting information from .csv's: 
-
-- Iteration in Bash: 
-
-- NCBI command line interface: 
