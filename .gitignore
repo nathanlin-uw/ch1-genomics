@@ -1,3 +1,7 @@
-# To keep a folder's contents
+# To keep a folder's contents, use "!":
 !folder/*
 !README.md
+
+# Don't include the downloaded genomes, but keep the README and the folder itself
+ncbi-genomes/*
+!ncbi-genomes/README.md
