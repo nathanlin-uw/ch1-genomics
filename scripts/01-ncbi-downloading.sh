@@ -24,7 +24,7 @@ if ! command -v datasets >/dev/null 2>&1; then
 fi 
 
 # Identify the NCBI assemblies .csv file (I will need to manually keep this up to date if the .csv changes)
-ncbi_assemblies_csv="../script-inputs/all-ncbi-genomes-20261105.csv"
+ncbi_assemblies_csv="../script-inputs/all-ncbi-genomes-20261119.csv"
 
 # Identify the destination directory, creating it if it does not already exist
 downloads_destination="../ncbi-genomes/${1}-quality"
@@ -39,16 +39,12 @@ mkdir "${downloads_destination}"
 while IFS=$',' read -r acc_no name ann_info qual; do
 	# Only work with genomes of the specified quality
 	if [[ "${qual}" = "${1}" ]]; then
-		# Check whether an annotation on NCBI is available 
-		if [[ "${ann_info}" = "ncbi-ann" ]]; then
-			echo "Has annotation: ${acc_no}"
-			# Run the NCBI datasets download command, downloading genome and annotation files
-			datasets download genome accession "${acc_no}" --filename "${downloads_destination}/${name}.zip" --include genome,gff3,cds,protein
-		else
-			echo "No annotation: ${acc_no}"
-			# Run the NCBI datasets download command, downloading only genome files
-			datasets download genome accession "${acc_no}" --filename "${downloads_destination}/${name}.zip" --include genome
-		fi
+		# Check whether an annotation on NCBI is available (this is a remnant when I thought asking for protein/cds files for assemblies without them would cause an error)
+		if [[ "${ann_info}" = "ncbi-ann" || "${ann_info: 0: 8}" = "ncbi-ann" ]]; then
+			# I'm just going to condense it to one line
+			echo "Has annotation: ${acc_no}"; else echo "No annotation: ${acc_no}"; fi
+		# Run the NCBI datasets download command, downloading genome and any available annotation files
+		datasets download genome accession "${acc_no}" --filename "${downloads_destination}/${name}.zip" --include genome,gff3,cds,protein
 		## NCBI CLI downloads a .zip file, so extract the relevant files and clean up the space
 		## Upon unzipping, sequences are found in ./ncbi_dataset/data/{accession number}/  
 		# Unzip the output into the download destination folder
