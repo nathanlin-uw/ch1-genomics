@@ -43,7 +43,7 @@ My notes for thinking through and writing this script are below:
 - NCBI datasets command line interface:
 	- This script depends on the ncbi-datasets-cli package, version 18.41.1. I installed it using Conda, with `conda install conda-forge::ncbi-datasets-cli`
 	- I can use the following command: `datasets download genome accession "${accession_number}" --filename "${assembly_name}" --include genome,gff3,cds,protein`
-	- Each assembly is downloaded as a zip file, which unzips to an archive containing the assembly's files, with the folder structure ncbi_dataset/data/{accession number}/. I will need to extract, rename, and clean up these files in the script.
+	- Each assembly is downloaded as a zip file, which unzips to an archive containing the assembly's files, with the folder structure ncbi_dataset/data/{accession number}/. I will need to extract, rename, and clean up these files in the script. When renaming the files like protein.faa, I'll just attach the assembly name in front. I use parameter expansion for this -- in order to pull out the file name, which is the very last part of the path, I can access it with `"${file##*/}"`.
 
 To run the script, in the scripts/ folder and with ncbi-datasets-cli in the active Conda environment, I used the commands `bash 01-ncbi-downloading.sh high`, `bash 01-ncbi-downloading.sh med`, and ``bash 01-ncbi-downloading.sh low`. The downloads were all saved to ncbi-genomes/, in their respective high-quality/, med-quality/, and low-quality/ subfolders. 
 

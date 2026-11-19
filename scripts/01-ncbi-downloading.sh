@@ -1,4 +1,4 @@
-\#!/bin/bash
+#!/bin/bash
 
 # This script will download the genome and annotation (if available) of the specified genome assemblies on NCBI.
 # We need to input the quality of assemblies desired (high/med/low) -- refer to ../script-inputs/all-ncbi-genomes-20261105.csv and ../info/ncbi-ixodid-genomes-v1-20261105.pdf for more details. We'll take this as a single argument.
@@ -28,6 +28,10 @@ ncbi_assemblies_csv="../script-inputs/all-ncbi-genomes-20261105.csv"
 
 # Identify the destination directory, creating it if it does not already exist
 downloads_destination="../ncbi-genomes/${1}-quality"
+# I'm going to have this start from scratch every time, so it will delete and recreate the directory each time
+if [[ -e "${downloads_destination}" ]]; then
+	rm -r "${downloads_destination}"
+fi
 mkdir "${downloads_destination}"
 
 # Start reading the .csv file of genome assemblies -- the while loop iterates through one line at a time
@@ -39,11 +43,11 @@ while IFS=$',' read -r acc_no name ann_info qual; do
 		if [[ "${ann_info}" = "ncbi-ann" ]]; then
 			echo "Has annotation: ${acc_no}"
 			# Run the NCBI datasets download command, downloading genome and annotation files
-			datasets download genome accession "${acc_no}" --filename "${downloads_destination}/${name}.zip" --include genome,gff3,cds,protein
+		#	datasets download genome accession "${acc_no}" --filename "${downloads_destination}/${name}.zip" --include genome,gff3,cds,protein
 		else
 			echo "No annotation: ${acc_no}"
 			# Run the NCBI datasets download command, downloading only genome files
-			datasets download genome accession "${acc_no}" --filename "${downloads_destination}/${name}.zip" --include genome
+		#	datasets download genome accession "${acc_no}" --filename "${downloads_destination}/${name}.zip" --include genome
 		fi
 		## NCBI CLI downloads a .zip file, so extract the relevant files and clean up the space
 		## Upon unzipping, sequences are found in ./ncbi_dataset/data/{accession number}/  
@@ -56,6 +60,11 @@ while IFS=$',' read -r acc_no name ann_info qual; do
 		rm "${downloads_destination}/README.md"
 		rm "${downloads_destination}/md5sum.txt"
 		rm -r "${downloads_destination}/ncbi_dataset/"
+		# Rename each individual file in the folder, attaching the assembly name in front
+		for file in "${downloads_destination}/${name}"/*; do
+			# Attach the name in front (use parameter expansion to get only file name)
+			mv "${file}" "${downloads_destination}/${name}/${name}_${file##*/}"
+		done
 	fi
 done < "${ncbi_assemblies_csv}"
 
