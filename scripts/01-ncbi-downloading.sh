@@ -43,11 +43,11 @@ while IFS=$',' read -r acc_no name ann_info qual; do
 		if [[ "${ann_info}" = "ncbi-ann" ]]; then
 			echo "Has annotation: ${acc_no}"
 			# Run the NCBI datasets download command, downloading genome and annotation files
-		#	datasets download genome accession "${acc_no}" --filename "${downloads_destination}/${name}.zip" --include genome,gff3,cds,protein
+			datasets download genome accession "${acc_no}" --filename "${downloads_destination}/${name}.zip" --include genome,gff3,cds,protein
 		else
 			echo "No annotation: ${acc_no}"
 			# Run the NCBI datasets download command, downloading only genome files
-		#	datasets download genome accession "${acc_no}" --filename "${downloads_destination}/${name}.zip" --include genome
+			datasets download genome accession "${acc_no}" --filename "${downloads_destination}/${name}.zip" --include genome
 		fi
 		## NCBI CLI downloads a .zip file, so extract the relevant files and clean up the space
 		## Upon unzipping, sequences are found in ./ncbi_dataset/data/{accession number}/  
