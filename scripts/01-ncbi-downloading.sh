@@ -9,8 +9,8 @@
 cd "$(dirname '${0}')"
 
 # Check if our input is invalid -- if so, we give an error message and stop the script.
-if [[ "${1}" != "high" && "${1}" != "med" && "${1}" != "low" ]]; then
-	echo "You did not give a proper input -- please pick one of 'high', 'med', or 'low'."
+if [[ "${1}" != "high" && "${1}" != "med" && "${1}" != "low" && "${1}" != "legacy-for-annotation" ]]; then
+	echo "You did not give a proper input -- please pick one of 'high', 'med', 'low', or 'legacy-for-annotation'."
 	exit 1
 else
 	# A nice little message to show that the input was valid
