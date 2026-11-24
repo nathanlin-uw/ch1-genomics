@@ -1,1 +1,1 @@
-This folder contains reads trimmed with ___.
+This folder contains reads trimmed with fastp version ____.
