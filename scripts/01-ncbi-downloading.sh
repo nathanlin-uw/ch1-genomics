@@ -24,7 +24,7 @@ if ! command -v datasets >/dev/null 2>&1; then
 fi 
 
 # Identify the NCBI assemblies .csv file (I will need to manually keep this up to date if the .csv changes)
-ncbi_assemblies_csv="../script-inputs/all-ncbi-genomes-20261123.csv"
+ncbi_assemblies_csv="../script-inputs/all-ncbi-genomes-20261124.csv"
 
 # Identify the destination directory, creating it if it does not already exist
 downloads_destination="../ncbi-genomes/${1}-quality"
