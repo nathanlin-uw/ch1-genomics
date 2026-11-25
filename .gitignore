@@ -2,6 +2,16 @@
 !folder/*
 !README.md
 
-# Don't include the downloaded genomes, but keep the README and the folder itself
+# Don't include the downloaded genomes and annotations, but keep the READMEs and the folders themselves
 ncbi-genomes/*
 !ncbi-genomes/README.md
+ncbi-annotated-cds/*
+ncbi-annotated-proteins/*
+
+# Don't include my Illumina and Nanopore sequence data, but keep the READMEs and the folders themselves
+illumina-sequencing/*
+nanopore-sequencing/*
+
+
+# Blanket statement to keep all README.md files
+!README.md
