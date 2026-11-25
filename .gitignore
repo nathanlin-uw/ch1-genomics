@@ -1,9 +1,30 @@
 # To keep a folder's contents, use "!":
-!folder/*
 !README.md
 
 # Don't include the data (downloaded genomes, annotations, and Illumina and Nanopore sequence data)
 data/*
 
-# Blanket statement to keep all README.md files in order to preserve folder structure
-!README.md
+# To keep the READMEs, apparently I need to unignore and then reignore ALL subfolders and their contents  
+!data/ncbi-genomes/
+data/ncbi-genomes/*
+
+!data/ncbi-annotated-cds/
+data/ncbi-annotated-cds/*
+
+!data/ncbi-annotated-proteins/
+data/ncbi-annotated-proteins/*
+
+!data/illumina-sequencing/
+data/illumina-sequencing/*
+!data/illumina-sequencing/raw-reads/
+data/illumina-sequencing/raw-reads/*
+!data/illumina-sequencing/trimmed-reads/
+data/illumina-sequencing/trimmed-reads/*
+
+!data/nanopore-sequencing/
+data/nanopore-sequencing/*
+
+# Blanket statement to keep all README.md files in order to preserve folder structure 
+# **/ is needed for READMEs at any depth 
+!**/README.md
+ 
