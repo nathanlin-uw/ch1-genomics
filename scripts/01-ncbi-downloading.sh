@@ -27,7 +27,7 @@ fi
 ncbi_assemblies_csv="../script-inputs/all-ncbi-genomes-20261124.csv"
 
 # Identify the destination directory, creating it if it does not already exist
-downloads_destination="../ncbi-genomes/${1}-quality"
+downloads_destination="../data/ncbi-genomes/${1}-quality"
 # I'm going to have this start from scratch every time, so it will delete and recreate the directory each time
 if [[ -e "${downloads_destination}" ]]; then
 	rm -r "${downloads_destination}"
