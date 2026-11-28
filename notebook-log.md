@@ -51,7 +51,7 @@ To run the script, in the scripts/ folder and with ncbi-datasets-cli in the acti
 
 The first time around, the high quality genomes used 61G of storage space, the med quality genomes used 26G, and the low quality genomes used 39G, for a total of 125G. There should have been 24 assemblies for which annotations are available (19 high, 4 med, 1 low), although only 10 of the 19 high quality assemblies actually had cds/protein files downloaded. I think I may need to swap the assemblies used from the GCA to the GCF versions (GenBank by submitter vs NCBI owned curated copy) so that I can actually get the assembly with it. The assemblies missing annotations are those for A. mixtum, A. americanum (Luecke), A. maculatum, D. albipictus, D. andersoni, D. variabilis, Ha. longicornis (Moustafa), I. scapularis, and R. microplus (Tidwell). I'll grab the accessions for these RefSeq assemblies, add them to the info PDF, and add them to the script input csv as a new set of assemblies of "legacy-for-annotation" quality. 
 
-The second time, with the inclusion of the legacy assemblies, I had 24/24 annotations. The high quality genomes used __G of storage space, ...
+The second time, with the inclusion of the legacy assemblies, I had 24/24 annotations. The high quality genomes used 61G of storage space, the mid quality genomes used 29G, the low quality genomes used 37G, and the legacy assemblies used another 25G, for a total of 151G.
 
 
 ### Quality assessment of annotations ###
